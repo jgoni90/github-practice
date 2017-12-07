@@ -1,0 +1,56 @@
+~###############
+~/############## CALCULATE HISTOGRAMS
+~###############
+~o=39
+
+~!del LogFiles\Export_S%1%.log
+reports=LogFiles\Export_S%1%.log
+
+~/#### Binary matrix Internal - Internal Productions ######
+~/#########################################################
+
+~+|3.21|1|y|"temp6"|n|1|||n|2|q
+~+|3.21|1|y|"temp6"|n|0|||y|%2%0||*|2|q                                       'Exclude external productions
+
+~/#### Export Trip Length Distributions  #######
+~/##################################################
+
+~t1=AM
+~:periodloopstart1
+
+~t2=Rd
+~:modeloopstart1
+
+~+|3.21|1|y|"temp1"|n|0|||n|2|q
+~+|3.21|1|y|"temp2"|n|0|||n|2|q
+~+|3.21|1|y|"temp3"|n|0|||n|2|q
+
+~# Aggregate the 5 purposes to 3
+~+|3.21|1|y|"temp1"|n|"M%t2%1%t1%"+"M%t2%2%t1%"'|||n|2|q                                                 'HBW
+~+|3.21|1|y|"temp2"|n|"M%t2%3%t1%"+"M%t2%4%t1%"'|||n|2|q                                                 'HBO
+~+|3.21|1|y|"temp3"|n|"M%t2%5%t1%"|||n|2|q                                                               'NHB
+
+~z=1
+~:purposeloopstart1
+
+~+|~?z=1|~t3=HBW|~?z=2|~t3=HBO|~?z=3|~t3=NHB
+
+~!del Outputs\TLD\%2%\%t2%S%1%_MPD_%t2%_%t3%_%t1%.txt
+reports=Outputs\TLD\%2%\%t2%S%1%_MPD_%t2%_%t3%_%t1%.txt
+~+|3.16|4|"DstSRM"|y|"temp%z%"|n|"temp6"|1,1,include|0,750000|1000|2|q
+
+~+|~?z=3|~$exitpurposeloop1
+~z+1
+~$purposeloopstart1
+~:exitpurposeloop1
+
+~+|~?t2=Rl|~$exitmodeloop1|~?t2=Rd|~t2=Rl
+~$modeloopstart1
+~:exitmodeloop1
+
+~+|~?t1=OP|~$exitperiodloop1|~?t1=PM|~t1=OP|~?t1=IP|~t1=PM|~?t1=AM|~t1=IP
+~$periodloopstart1
+~:exitperiodloop1
+
+
+reports=
